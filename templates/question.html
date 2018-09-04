@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>十九大精神知多少</title>
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/ladda-themeless.min.css' %}">
+		<style type="text/css">
+			body {
+				background-color: #F1F2F3;
+				margin: 0px;
+				padding: 0px;
+				background-image: url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1531576833127&di=dfb94ee91ca0635f3acd4eeb524b2340&imgtype=0&src=http%3A%2F%2Fimg3.duitang.com%2Fuploads%2Fitem%2F201601%2F20%2F20160120220344_RZaTK.jpeg');
+			}
+			header {
+				height: 50px;
+				background-color: ##f7f7f7;
+				color: #000;
+				border-bottom: 1px solid #ddd;
+				height: 50px;
+				box-shadow: 0 1px 6px #ccc;
+			}
+			.title {
+				line-height: 50px;
+			}
+			.red {
+				color: red;
+			}
+			#main {
+				display: none;
+			}
+			#verify {
+				margin-top: 50px;
+			}
+			#verify button {
+				width: 80%;
+				margin-left: 10%;
+				margin-top: 5px;
+			}
+			.modal-dialog {
+				margin-top: 50px;
+			}
+			#noexist {
+				display: none;
+			}
+			.form-group {
+				margin-bottom: 0;
+			}
+
+			.repeat {
+				display: none;
+			}
+			.score {
+				height: 100px;
+				font-size: 100px;
+				color: red;
+				margin: 0px auto;
+			}
+			#answer {
+				display: none;
+			}
+
+		</style>
+	</head>
+	<body>
+		<header>
+			<h4 class="title text-center">十九大精神知多少</h4>
+		</header>
+
+		<div id="verify">
+			<h3 class="text-center">请点击验证学号开始答题</h3>
+		    <button id="btn_info" class="btn btn-primary btn-lg">验证</button>
+		</div>
+
+		<div id="main" class="container"><form id="form">
+			<input type="hidden" name="user_id" value="0" id="user_id">
+
+			{% for question in questions %}
+			<div class="panel panel-default" style="margin-top: 20px">
+				<div class="panel-heading"> {{forloop.counter}}.{{ question.question_text }} <span class="red"></span> </div>
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li> <label> <input type="radio" name="{{ forloop.counter }}" value="1" /> {{ question.answer_1 }} </label> </li>
+						<li> <label> <input type="radio" name="{{ forloop.counter }}" value="2" /> {{ question.answer_2 }} </label> </li>
+						<li> <label> <input type="radio" name="{{ forloop.counter }}" value="3" /> {{ question.answer_3 }} </label> </li>
+						<li> <label> <input type="radio" name="{{ forloop.counter }}" value="4" /> {{ question.answer_4 }} </label> </li>
+					</ul>
+				</div>
+			</div>
+			{% endfor %}
+
+		</form>
+		<button id="submit" type="button" class="btn btn-primary ladda-button disabled" style="width: 60%; margin-left: 20%; margin-bottom: 50px;" data-style='expand-right' data-size='l'> <span class="ladda-label">提交</span> </button>
+		</div>
+
+
+		<div class="modal fade" id="info_verify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">请输入你的学号</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="txt_departmentname">学号</label>
+                        <input id="student_verify_id" type="text" name="txt_departmentname" class="form-control" id="txt_departmentname" placeholder="学号">
+                        <h6 id="noexist" class="text-center red">此学号不存在，请重新输入</h6>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btn_submit" class="btn btn-primary btn-lg btn-block ladda-button" data-dismiss="modal" data-style="zoom-out" data-size="l"><span class='ladda-label'>提交</span> </button>
+                </div>
+            </div>
+        </div>
+    	</div>
+
+		<div class="modal fade" id="info_show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">请确认信息</h4>
+				</div>
+				<div class="modal-body">
+					<h4>姓名：<span id="student_name"></span></h4>
+					<h4>学号：<span id="student_id"></span></h4>
+					<h4>院系：<span id="student_department"></span></h4>
+					<h4>班级：<span id="student_grade"></span></h4>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" id="btn_OK" class="btn btn-danger btn-block btn-lg" data-dismiss="modal">确认，开始答题</button>
+					<button type="button" id="btn_back" class="btn btn-primary btn-block btn-lg" data-dismiss="modal" style="margin-top: 10px">错误，重新验证学号</button>
+				</div>
+			</div>
+		</div>
+		</div>
+
+		<div id="answer" class="container">
+			<h1 class="text-center"><span id='student_name_text'></span>同学，此次得分为：</h1>
+			<div id="score" class="score text-center"></div>
+		</div>
+
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="{% static 'js/spin.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/ladda.min.js' %}"></script>
+    <script type="text/javascript">
+    	$(document).ready(function() {
+    		$("#main").hide();
+			$("#info_verify").modal();
+
+    		$("#btn_info").click(function() {
+    			$("#info_verify").modal();
+    		});
+
+    		$("#student_verify_id").focus(function() {
+    			$("#noexist").hide();
+    		})
+
+    		$("#btn_submit").click(function(event) {
+    			rgExp = /1[0|3|4|5|6|7][0-9]{8}/;
+    			flag = 0;
+    			l = Ladda.create($("#btn_submit").get(0));
+    			if ( !rgExp.test( $("#student_verify_id").val() ) ) {
+    				$("#noexist").show();
+    				return false;
+    			} else {
+	    			l.start();
+	    			$.ajax({
+	    				type: "post",
+	    				async: false,
+	    				url: "/start/verify/",
+	    				data: {
+	    					student_id: $("#student_verify_id").val(),
+	    				},
+	    				dataType: "json",
+	    				success: function(data) {
+	    					if (data.exist == 1) {
+				    			$("#user_id").val(data.user_id);
+				    			$("#student_name").text(data.student_name);
+								$("#student_name_text").text(data.student_name);
+				    			$("#student_id").text(data.student_id);
+				    			$("#student_department").text(data.student_department);
+				    			$("#student_grade").text(data.student_grade);
+				    			$("#info_show").modal();
+				    			flag = 1;
+	    					} else {
+	    						$("#noexist").show();
+	    					}
+	    				},
+	    				error: function() {
+	    					alert("验证失败，请检查网络连接稍后重试");
+	    				}
+	    			})
+    				l.stop();
+
+    				// 验证模态框状态
+    				if (flag == 0) {
+		    			return false;
+    				}
+	    		}
+    		});
+
+    		$("#btn_OK").click(function() {
+    			$("#verify").hide();
+    			$("#main").show();
+    			$("#submit").removeClass("disabled");
+    		});
+
+    		$("#btn_back").click(function(event) {
+    			event.preventDefault();
+    			$("#info_verify").modal();
+    			$("#student_verify_id").val('');
+    		})
+
+    		$("#submit").click(function() {
+    			l = Ladda.create(this);
+    			l.start();
+    			$.ajax({
+    				type: "post",
+    				url: "/start/submit/",
+    				data: $("#form").serialize(),
+    				dataType: "json",
+    				success: function(data) {
+    					if (data.status == 1) {
+			    			$("#main").hide();
+			    			$("#answer").fadeIn();
+			    			$("#score").text( parseInt(data.score) );
+    					}
+    					// $("#repeat").show();
+    				},
+    				error: function() {
+    					alert("提交失败，请检查网络连接稍后重试");
+    				}
+    			})
+				l.stop();
+    		})
+    	})
+    </script>
+	</body>
+</html>
+
+

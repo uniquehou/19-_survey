@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>全部成绩</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style type="text/css">
+		h3 {
+			margin: 20px auto 20px auto;
+			text-align: center;
+		}
+		th, td {
+			text-align: center;
+		}
+		.info td {
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<h3>全校答题情况</h3>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-condensed">
+			<thead>
+				<th>院系</th>
+				<th>答题人数</th>
+				<th>答题率</th>
+				<th>平均分</th>
+				<th>综合</th>
+			</thead>
+
+		</table>
+	</div>
+
+	<script src="http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.2.min.js"></script>
+	<script type="text/javascript">
+		$.get("/start/get_answer/", function(result, status) {
+			data = JSON.parse(result);
+			for(i=0; i<data.length-1; i++) {
+				tr = "<tr>"+
+					"<td>" + data[i][0] + "</td>"+
+					"<td>" + data[i][1] + "</td>"+
+					"<td>" + data[i][2] + "%</td>"+
+					"<td>" + data[i][3] + "</td>"+
+					"<td>" + data[i][4] + "</td>"+
+				"</tr>";
+				$("table").append(tr);
+			}
+				tr = "<tr class='info'>"+
+					"<td>" + data[14][0] + "</td>"+
+					"<td>" + data[14][1] + "</td>"+
+					"<td>" + data[14][2] + "%</td>"+
+					"<td>" + data[14][3] + "</td>"+
+					"<td>" + data[14][4] + "</td>"+
+				"</tr>";
+				$("table").prepend(tr);
+		});
+		$(document).ready(function() {
+			$("h3").click(function() {
+				$("tr.info").toggle('slow');
+			});
+		});
+	</script>
+</body>
+</html>
